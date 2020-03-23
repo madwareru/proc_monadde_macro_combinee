@@ -22,7 +22,7 @@ pub fn define_cmonadde_macro(_: TokenStream) -> TokenStream {
 
     //root bind step
     result_string.append_line("($e_in0:expr => $i0:ident |> $e_in:expr => $i:ident |> $e_out:expr)");
-    result_string.append_line("=> { $e_in0.then(move |$i0| monadde!{ $e_in => $i |> $e_out }) };");
+    result_string.append_line("=> { $e_in0.then(move |$i0| c_monadde!{ $e_in => $i |> $e_out }) };");
 
     for i in 1..DEPTH {
         result_string.append_line("(");
@@ -33,7 +33,7 @@ pub fn define_cmonadde_macro(_: TokenStream) -> TokenStream {
         }
         result_string.append_line("$e_in:expr => $i:ident |> $e_out:expr");
         result_string.append_line(") => {");
-        result_string.append_line("$e_in0.then(move |$i0| monadde!{");
+        result_string.append_line("$e_in0.then(move |$i0| c_monadde!{");
         for j in 1..=i {
             let formatted = format!("$e_in{} => $i{} |> ", j, j);
             result_string.append_line(&formatted);
