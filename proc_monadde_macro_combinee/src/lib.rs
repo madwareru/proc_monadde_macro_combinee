@@ -18,11 +18,11 @@ pub fn define_cmonadde_macro(_: TokenStream) -> TokenStream {
 
     //map step (simplest variant possible)
     result_string.append_line("($e_in:expr => $i:ident |> $e_out:expr)");
-    result_string.append_line("=> { $e_in.map(move |$i| $e_out) };");
+    result_string.append_line("=> { $e_in.map(|$i| $e_out) };");
 
     //root bind step
     result_string.append_line("($e_in0:expr => $i0:ident |> $e_in:expr => $i:ident |> $e_out:expr)");
-    result_string.append_line("=> { $e_in0.then(move |$i0| c_monadde!{ $e_in => $i |> $e_out }) };");
+    result_string.append_line("=> { ($e_in0, $e_in).map(|$i0, $i| $e_out ) };");
 
     for i in 1..DEPTH {
         result_string.append_line("(");
@@ -33,16 +33,18 @@ pub fn define_cmonadde_macro(_: TokenStream) -> TokenStream {
         }
         result_string.append_line("$e_in:expr => $i:ident |> $e_out:expr");
         result_string.append_line(") => {");
-        result_string.append_line("$e_in0.then(move |$i0| c_monadde!{");
+        result_string.append_line("( $e_in0,");
         for j in 1..=i {
-            let formatted = format!("$e_in{} => $i{} |> ", j, j);
+            let formatted = format!("$e_in{},", j);
             result_string.append_line(&formatted);
         }
-        result_string.append_line("$e_in => $i |> $e_out");
-        result_string.append_line("})");
-        result_string.append_line("};")
+        result_string.append_line("$e_in).map(| $i0, ");
+        for j in 1..=i {
+            let formatted = format!("$i{}, ", j);
+            result_string.append_line(&formatted);
+        }
+        result_string.append_line("$e_in).map($i | $e_out) };");
     }
-
     result_string.append_line("}");
     (&result_string).parse::<TokenStream>().unwrap()
 }
