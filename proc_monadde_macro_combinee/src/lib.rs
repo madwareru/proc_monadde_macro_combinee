@@ -33,9 +33,9 @@ pub fn define_cmonadde_macro(_: TokenStream) -> TokenStream {
         }
         result_string.append_line("$e_in:expr => $i:ident |> $e_out:expr");
         result_string.append_line(") => {");
-        result_string.append_line("( $e_in0,");
+        result_string.append_line("( $e_in0, ");
         for j in 1..=i {
-            let formatted = format!("$e_in{},", j);
+            let formatted = format!("$e_in{}, ", j);
             result_string.append_line(&formatted);
         }
         result_string.append_line("$e_in).map(|($i0, ");
@@ -43,7 +43,7 @@ pub fn define_cmonadde_macro(_: TokenStream) -> TokenStream {
             let formatted = format!("$i{}, ", j);
             result_string.append_line(&formatted);
         }
-        result_string.append_line("$e_in).map($i)| $e_out) };");
+        result_string.append_line("$i)| $e_out) };");
     }
     result_string.append_line("}");
     (&result_string).parse::<TokenStream>().unwrap()
